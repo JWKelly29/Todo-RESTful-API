@@ -12,7 +12,7 @@ module.exports = app => {
         res.send(doc);
       },
       err => {
-        res.status(400).send("error: ", err);
+        res.status(400).send(err);
       }
     );
   });
