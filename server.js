@@ -15,4 +15,4 @@ app.listen(3000, () => {
   console.log("starting on point 3000");
 });
 
-module.exports = app;
+module.exports = { app };
