@@ -8,11 +8,12 @@ const { Todo } = require("./models/Todo");
 const app = express();
 // middleware to be used on incoming request before being sent off to request handlers
 app.use(bodyParser.json());
+const port = process.env.PORT || 3000;
 
 require("./routes/todoRoutes")(app);
 
-app.listen(3000, () => {
-  console.log("starting on point 3000");
+app.listen(port, () => {
+  console.log(`starting on port ${port}`);
 });
 
 module.exports = { app };
