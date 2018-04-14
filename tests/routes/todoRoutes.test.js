@@ -1,16 +1,18 @@
 const expect = require("expect");
 const request = require("supertest");
 const { ObjectID } = require("mongodb");
-const { mongoose } = require("mongoose");
+const { mongoose } = require("../../db/mongoose");
 
-const { app } = require("../server");
-const { Todo } = require("../models/Todo");
+const { app } = require("../../server");
+const { Todo } = require("../../models/Todo");
 
 const todos = [
   {
+    _id: new ObjectID(),
     text: "first test todo"
   },
   {
+    _id: new ObjectID(),
     text: "second test todo"
   }
 ];
@@ -81,6 +83,30 @@ describe("GET /todos", () => {
       })
       .end(done);
   });
+});
 
-  it("Should get a specific todo", done => {});
+describe("GET /todos/:id", () => {
+  it("Should return a specific todo doc", done => {
+    request(app)
+      .get(`/todos/${todos[0]._id.toHexString()}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.todo.text).toBe(todos[0].text);
+      })
+      .end(done);
+  });
+  it("Should return a 404 if the todo doc is not found", done => {
+    var objID = new ObjectID();
+    request(app)
+      .get(`/todos/${objID.toHexString()}`)
+      .expect(404)
+      .end(done);
+  });
+
+  it("Should return a 404 if the an a non-objectID is given", done => {
+    request(app)
+      .get(`/todos/nonObjectID`)
+      .expect(404)
+      .end(done);
+  });
 });
