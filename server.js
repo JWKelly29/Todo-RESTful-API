@@ -13,6 +13,7 @@ app.use(bodyParser.json());
 const port = process.env.PORT;
 
 require("./routes/todoRoutes")(app);
+require("./routes/userRoutes")(app);
 
 app.listen(port, () => {
   console.log(`starting on port ${port}`);
