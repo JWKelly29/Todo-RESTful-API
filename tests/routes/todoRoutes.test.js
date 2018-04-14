@@ -1,10 +1,10 @@
+const { app } = require("../../server");
+const { Todo } = require("../../models/Todo");
+
 const expect = require("expect");
 const request = require("supertest");
 const { ObjectID } = require("mongodb");
 const { mongoose } = require("../../db/mongoose");
-
-const { app } = require("../../server");
-const { Todo } = require("../../models/Todo");
 
 const todos = [
   {
@@ -22,7 +22,11 @@ const todos = [
 beforeEach(done => {
   Todo.remove({})
     .then(() => {
-      Todo.insertMany(todos);
+      return Todo.insertMany(todos, (error, docs) => {
+        if (error) {
+          return done(error);
+        }
+      });
     })
     .then(() => {
       done();
@@ -51,7 +55,10 @@ describe("POST /todos", () => {
             expect(todos[0].text).toBe(text);
             done();
           })
-          .catch(e => done(e));
+          .catch(e => {
+            console.log(e);
+            done(e);
+          });
       });
   });
 
