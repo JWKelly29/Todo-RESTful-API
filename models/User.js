@@ -38,7 +38,7 @@ UserSchema.methods.toJSON = function() {
   var user = this;
   var userObj = user.toObject();
 
-  return _.pick(userObject, ["_id", "email"]);
+  return _.pick(userObj, ["_id", "email"]);
 };
 
 UserSchema.methods.generateAuthToken = function() {
@@ -50,6 +50,23 @@ UserSchema.methods.generateAuthToken = function() {
   user.tokens = user.tokens.concat([{ access, token }]);
   user.save().then(() => {
     return token;
+  });
+};
+
+UserSchema.statics.findByToken = function(token) {
+  var user = this;
+  var decoded;
+
+  try {
+    decoded = jwt.verify(token, "123abc789");
+  } catch (e) {
+    return Promise.reject();
+  }
+
+  return user.findOne({
+    _id: decoded._id,
+    "tokens.token": token,
+    "tokens.access": "auth"
   });
 };
 
