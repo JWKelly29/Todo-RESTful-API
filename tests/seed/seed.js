@@ -1,5 +1,6 @@
 const { ObjectID } = require("mongodb");
 const { Todo } = require("../../models/Todo");
+const { User } = require("../../models/User");
 const jwt = require("jsonwebtoken");
 
 userOneID = new ObjectID();
@@ -68,7 +69,9 @@ const populateUsers = done => {
 
       return Promise.all([userOne, userTwo]);
     })
-    .then(done);
+    .then(() => {
+      done();
+    });
 };
 
 module.exports = { todos, populateTodos, users, populateUsers };
