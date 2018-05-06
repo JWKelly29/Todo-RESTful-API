@@ -44,7 +44,6 @@ UserSchema.methods.toJSON = function() {
 
 UserSchema.methods.generateAuthToken = function() {
   var user = this;
-  console.log(user);
   var access = "auth";
   var token = jwt.sign({ _id: user._id.toHexString(), access }, "123abc789");
   // concat instead of push
@@ -68,6 +67,25 @@ UserSchema.statics.findByToken = function(token) {
     _id: decoded._id,
     "tokens.token": token,
     "tokens.access": "auth"
+  });
+};
+
+UserSchema.statistics.findByCredentials = function(email, password) {
+  var user = this;
+  return user.findOne({ email }).then(user => {
+    if (!user) {
+      return Promise.reject();
+    }
+
+    return new Promise((resolve, reject) => {
+      bcrypt.compare(password, user.password, (err, res) => {
+        if (res) {
+          resolve(user);
+        } else {
+          reject();
+        }
+      });
+    });
   });
 };
 
