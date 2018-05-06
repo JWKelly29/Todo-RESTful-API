@@ -33,7 +33,7 @@ describe("GET /users/me", function() {
 });
 
 describe("Post /users/me", function() {
-  it("Should create a user", done => {
+  it("Should create a user and that user should have a hashed password", done => {
     var email = "test@test.com";
     var password = "password123";
 
@@ -46,8 +46,35 @@ describe("Post /users/me", function() {
         expect(res.body._id).toBeTruthy();
         expect(res.body.email).toBe(email);
       })
+      .end(err => {
+        if (err) {
+          return done(err);
+        }
+        User.findOne({ email }).then(user => {
+          expect(user).toBeTruthy();
+          expect(user.password).not.toBe(password);
+          done();
+        });
+      });
+  });
+  it("Should return validation errors if request is invalid", done => {
+    request(app)
+      .post("/users")
+      .send({
+        email: "invalid email",
+        password: "123"
+      })
+      .expect(400)
       .end(done);
   });
-  it("Should return validation errors if request is invalid", done => {});
-  it("Should not create user if email in use", done => {});
+  it("Should not create user if email in use", done => {
+    request(app)
+      .post("/users")
+      .send({
+        email: users[0].email,
+        password: "password123"
+      })
+      .expect(400)
+      .end(done);
+  });
 });
