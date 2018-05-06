@@ -10,7 +10,7 @@ const users = [
     _id: userOneID,
     email: "email@email.com",
     password: "userOnePass",
-    token: [
+    tokens: [
       {
         access: "auth",
         token: jwt
@@ -23,7 +23,7 @@ const users = [
     _id: userTwoID,
     email: "user2email@email.com",
     password: "userTwoPass",
-    token: [
+    tokens: [
       {
         access: "auth",
         token: jwt
@@ -50,11 +50,7 @@ const todos = [
 const populateTodos = done => {
   Todo.remove({})
     .then(() => {
-      return Todo.insertMany(todos, (error, docs) => {
-        if (error) {
-          return done(error);
-        }
-      });
+      return Todo.insertMany(todos);
     })
     .then(() => {
       done();
