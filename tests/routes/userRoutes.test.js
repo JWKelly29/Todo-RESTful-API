@@ -50,13 +50,15 @@ describe("Post /users/me", function() {
         if (err) {
           return done(err);
         }
-        User.findOne({ email }).then(user => {
-          expect(user).toBeTruthy();
-          expect(user.password).not.toBe(password);
-          done();
-        }).catch(e => {
-          done(e)
-        });
+        User.findOne({ email })
+          .then(user => {
+            expect(user).toBeTruthy();
+            expect(user.password).not.toBe(password);
+            done();
+          })
+          .catch(e => {
+            done(e);
+          });
       });
   });
   it("Should return validation errors if request is invalid", done => {
@@ -91,21 +93,23 @@ describe("Post /users/login", function() {
       })
       .expect(200)
       .expect(res => {
-        expect(res.headers["x-auth"]).toExist()
+        expect(res.headers["x-auth"]).toExist();
       })
       .end((err, res) => {
-        if (err){
-          return done(err)
+        if (err) {
+          return done(err);
         }
 
         User.findById(users[1]._id).then(user => {
-          expect(user.tokens[0]).toInclude({
-            access: "auth",
-            token: res.headers["x-auth"]
-          }).catch(e => {
-            done(e)
-          })
-        })
-      })
-  })
-}
+          expect(user.tokens[0])
+            .toInclude({
+              access: "auth",
+              token: res.headers["x-auth"]
+            })
+            .catch(e => {
+              done(e);
+            });
+        });
+      });
+  });
+});
