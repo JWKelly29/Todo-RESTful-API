@@ -48,7 +48,7 @@ UserSchema.methods.generateAuthToken = function() {
   var token = jwt.sign({ _id: user._id.toHexString(), access }, "123abc789");
   // concat instead of push
   user.tokens = user.tokens.concat([{ access, token }]);
-  user.save().then(() => {
+  return user.save().then(() => {
     return token;
   });
 };
@@ -71,8 +71,8 @@ UserSchema.statics.findByToken = function(token) {
 };
 
 UserSchema.statics.findByCredentials = function(email, password) {
-  var user = this;
-  return user.findOne({ email }).then(user => {
+  var User = this;
+  return User.findOne({ email }).then(user => {
     if (!user) {
       return Promise.reject();
     }

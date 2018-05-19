@@ -93,23 +93,27 @@ describe("Post /users/login", function() {
       })
       .expect(200)
       .expect(res => {
-        expect(res.headers["x-auth"]).toExist();
+        expect(res.headers["x-auth"]).toBeTruthy();
       })
       .end((err, res) => {
+        console.log("yo", err, res);
         if (err) {
           return done(err);
         }
-
-        User.findById(users[1]._id).then(user => {
-          expect(user.tokens[0])
-            .toInclude({
+        console.log("yo");
+        done();
+        User.findById(users[1]._id)
+          .then(user => {
+            expect(user.tokens[0]).toInclude({
               access: "auth",
               token: res.headers["x-auth"]
-            })
-            .catch(e => {
-              done(e);
             });
-        });
+            done();
+          })
+          .catch(e => {
+            done(e);
+          });
+        done();
       });
   });
 });
