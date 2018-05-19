@@ -96,15 +96,12 @@ describe("Post /users/login", function() {
         expect(res.headers["x-auth"]).toBeTruthy();
       })
       .end((err, res) => {
-        console.log("yo", err, res);
         if (err) {
           return done(err);
         }
-        console.log("yo");
-        done();
         User.findById(users[1]._id)
           .then(user => {
-            expect(user.tokens[0]).toInclude({
+            expect(user.tokens[1]).toMatchObject({
               access: "auth",
               token: res.headers["x-auth"]
             });
@@ -113,7 +110,6 @@ describe("Post /users/login", function() {
           .catch(e => {
             done(e);
           });
-        done();
       });
   });
 });
