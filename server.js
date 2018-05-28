@@ -12,8 +12,8 @@ const app = express();
 app.use(bodyParser.json());
 const port = process.env.PORT;
 
-require("./routes/todoRoutes")(app);
 require("./routes/userRoutes")(app);
+require("./routes/todoRoutes")(app);
 
 app.listen(port, () => {
   console.log(`starting on port ${port}`);

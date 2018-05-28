@@ -1,13 +1,15 @@
 const _ = require("lodash");
 const { ObjectID } = require("mongodb");
+const { authenticate } = require("../middleware/authenticate");
 
 const { mongoose } = require("../db/mongoose");
 const Todo = mongoose.model("Todo");
 
 module.exports = app => {
-  app.post("/todos", (req, res) => {
+  app.post("/todos", authenticate, (req, res) => {
     var todo = new Todo({
-      text: req.body.text
+      text: req.body.text,
+      _creator: req.user._id
     });
 
     todo.save().then(
@@ -20,8 +22,10 @@ module.exports = app => {
     );
   });
 
-  app.get("/todos", (req, res) => {
-    Todo.find().then(
+  app.get("/todos", authenticate, (req, res) => {
+    Todo.find({
+      _creator: req.user._id
+    }).then(
       todos => {
         // using obj instead of array in case i want to return more than just todos in future
         res.send({ todos });

@@ -5,7 +5,7 @@ const expect = require("expect");
 const request = require("supertest");
 const { ObjectID } = require("mongodb");
 const { mongoose } = require("../../db/mongoose");
-const { todos, populateTodos } = require("../seed/seed");
+const { todos, populateTodos, users } = require("../seed/seed");
 
 beforeEach(populateTodos);
 
@@ -15,7 +15,8 @@ describe("POST /todos", () => {
 
     request(app)
       .post("/todos")
-      .send({ text })
+      .set("x-auth", users[0].tokens[0].token)
+      .send({ text, _creator: users[0]._id })
       .expect(200)
       .expect(res => {
         expect(res.body.text).toBe(text);
@@ -41,6 +42,7 @@ describe("POST /todos", () => {
   it("should not create todo with invalid body data", done => {
     request(app)
       .post("/todos")
+      .set("x-auth", users[0].tokens[0].token)
       .send({})
       .expect(400)
       .end((err, res) => {
@@ -62,9 +64,10 @@ describe("GET /todos", () => {
   it("should get all todos", done => {
     request(app)
       .get("/todos")
+      .set("x-auth", users[0].tokens[0].token)
       .expect(200)
       .expect(res => {
-        res.body.todos.length == 2;
+        res.body.todos.length == 1;
       })
       .end(done);
   });
@@ -98,7 +101,11 @@ describe("GET /todos/:id", () => {
 
 describe("DELETE /todos/:id", () => {
   it("should remove a todo", done => {
-    var testTodo = new Todo({ _id: new ObjectID(), text: "test todo" });
+    var testTodo = new Todo({
+      _id: new ObjectID(),
+      text: "test todo",
+      _creator: users[0]._id
+    });
     testTodo.save();
 
     request(app)
